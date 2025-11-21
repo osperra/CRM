@@ -1,0 +1,29 @@
+/* src/app/globals.css */
+
+/* ✅ Tailwind v3 directives – must be at the top */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your custom styles */
+:root {
+  --bg-dashboard: #f4f7ff;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: radial-gradient(
+    circle at top left,
+    #f6f1ff 0,
+    #f5f8ff 40%,
+    #f4f7ff 100%
+  );
+  color: #0f172a;
+}
