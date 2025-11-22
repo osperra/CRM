@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { label: "Dashboard", icon: Grid2x2, href: "/" },
+  { label: "Dashboard", icon: Grid2x2, href: "/admin" },
   { label: "Subscriptions", icon: CreditCard, href: "/subscriptions" },
   { label: "Roles & Access", icon: Users, href: "/roles-access" },
   { label: "Analytics", icon: BarChart3, href: "/analytics" },
