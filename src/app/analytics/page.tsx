@@ -15,7 +15,43 @@ import {
 
 const RANGE_OPTIONS = ["Last 7 days", "Last 30 days", "Last 90 days", "This year"];
 
-const revenueData = [
+// Types
+type RevenuePoint = {
+  month: string;
+  value: number;
+};
+
+type UserActivityPoint = {
+  day: string;
+  active: number;
+  New: number;
+};
+
+type ModulePerformance = {
+  name: string;
+  revenue: number;
+  usage: number;
+  color: string;
+};
+
+type SubscriptionPlan = {
+  name: string;
+  percentage: number;
+  color: string;
+};
+
+type TaskProductivityPoint = {
+  week: string;
+  completed: number;
+  pending: number;
+};
+
+type PieSlice = SubscriptionPlan & {
+  startAngle: number;
+  endAngle: number;
+};
+
+const revenueData: RevenuePoint[] = [
   { month: "Apr", value: 12400 },
   { month: "May", value: 14200 },
   { month: "Jun", value: 15800 },
@@ -25,7 +61,7 @@ const revenueData = [
   { month: "Oct", value: 23800 },
 ];
 
-const userActivityData = [
+const userActivityData: UserActivityPoint[] = [
   { day: "Mon", active: 142, New: 8 },
   { day: "Tue", active: 156, New: 12 },
   { day: "Wed", active: 168, New: 15 },
@@ -35,7 +71,7 @@ const userActivityData = [
   { day: "Sun", active: 98, New: 4 },
 ];
 
-const modulePerformanceData = [
+const modulePerformanceData: ModulePerformance[] = [
   { name: "Jewellery E-Com", revenue: 45200, usage: 88, color: "#f59e0b" },
   { name: "HireX", revenue: 38900, usage: 92, color: "#8b5cf6" },
   { name: "Website Builder", revenue: 28400, usage: 65, color: "#06b6d4" },
@@ -44,7 +80,7 @@ const modulePerformanceData = [
   { name: "QR Generator", revenue: 8900, usage: 34, color: "#10b981" },
 ];
 
-const subscriptionPlansData = [
+const subscriptionPlansData: SubscriptionPlan[] = [
   { name: "Enterprise", percentage: 45, color: "#8b5cf6" },
   { name: "Professional", percentage: 30, color: "#3b82f6" },
   { name: "Business", percentage: 20, color: "#06b6d4" },
@@ -52,7 +88,7 @@ const subscriptionPlansData = [
 ];
 
 // Task productivity data (for the weekly line chart)
-const taskProductivityData = [
+const taskProductivityData: TaskProductivityPoint[] = [
   { week: "Week 1", completed: 89, pending: 26 },
   { week: "Week 2", completed: 94, pending: 18 },
   { week: "Week 3", completed: 101, pending: 15 },
@@ -89,9 +125,7 @@ export default function AnalyticsPage() {
   const revenuePoints = revenueData.map((point, index) => {
     const x = padding.left + (index / (revenueData.length - 1 || 1)) * innerWidth;
     const y =
-      padding.top +
-      innerHeight -
-      (point.value / REVENUE_MAX) * innerHeight;
+      padding.top + innerHeight - (point.value / REVENUE_MAX) * innerHeight;
 
     return { x, y };
   });
@@ -102,16 +136,11 @@ export default function AnalyticsPage() {
       .map((p) => `${p.x} ${p.y}`)
       .join(" L ");
 
-  const revenueAreaPath = `
-    M ${revenuePoints[0].x} ${padding.top + innerHeight}
-    L ${revenuePoints
-      .map((p) => `${p.x} ${p.y}`)
-      .join(" L ")}
+  const revenueAreaPath = `M ${revenuePoints[0].x} ${padding.top + innerHeight}
+    L ${revenuePoints.map((p) => `${p.x} ${p.y}`).join(" L ")}
     L ${revenuePoints[revenuePoints.length - 1].x} ${
     padding.top + innerHeight
-  }
-    Z
-  `;
+  } Z`;
 
   const hoveredRevenuePoint =
     hoveredMonthIndex != null ? revenuePoints[hoveredMonthIndex] : null;
@@ -125,14 +154,15 @@ export default function AnalyticsPage() {
   const hoveredActivity =
     hoveredActivityIndex != null ? userActivityData[hoveredActivityIndex] : null;
 
-  const [hoveredSlice, setHoveredSlice] = useState<any>(null);
+  const [hoveredSlice, setHoveredSlice] = useState<PieSlice | null>(null);
 
   // ----- Task productivity line chart layout -----
   const taskSvgWidth = 900; // wider viewbox to mimic full-width feel
   const taskSvgHeight = 260;
   const taskPadding = { top: 32, right: 40, bottom: 56, left: 60 };
   const taskInnerWidth = taskSvgWidth - taskPadding.left - taskPadding.right;
-  const taskInnerHeight = taskSvgHeight - taskPadding.top - taskPadding.bottom;
+  const taskInnerHeight =
+    taskSvgHeight - taskPadding.top - taskPadding.bottom;
 
   const taskPointsCompleted = taskProductivityData.map((point, index) => {
     const x =
@@ -169,7 +199,7 @@ export default function AnalyticsPage() {
     hoveredTaskPoint != null ? (hoveredTaskPoint.x / taskSvgWidth) * 100 : 0;
 
   // Calculate pie chart slices
-  const getPieChartSlices = () => {
+  const getPieChartSlices = (): PieSlice[] => {
     let currentAngle = -90; // start at top
     return subscriptionPlansData.map((plan) => {
       const sliceAngle = (plan.percentage / 100) * 360;
@@ -205,27 +235,27 @@ export default function AnalyticsPage() {
     const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
     return `M ${ix1} ${iy1} 
-            L ${x1} ${y1} 
-            A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} 
-            L ${ix2} ${iy2} 
-            A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
+        L ${x1} ${y1} 
+        A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} 
+        L ${ix2} ${iy2} 
+        A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f5f7ff]">
+    <div className="flex min-h-screen bg-[#f5f7ff] dark:bg-slate-950">
       <Sidebar />
 
       <div className="flex flex-1 flex-col">
         <TopBar />
 
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7ff] to-[#e5edff] px-6 py-6">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7ff] to-[#e5edff] dark:from-slate-950 dark:to-slate-900 px-6 py-6">
           {/* Header row */}
           <section className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                 Analytics &amp; Reports
               </h1>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Comprehensive insights into your Osperra ecosystem performance.
               </p>
             </div>
@@ -236,14 +266,14 @@ export default function AnalyticsPage() {
                 <button
                   type="button"
                   onClick={() => setShowRangeMenu((prev) => !prev)}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 border border-slate-200"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
                 >
                   <span>{range}</span>
                   <ChevronDown className="h-3 w-3" />
                 </button>
 
                 {showRangeMenu && (
-                  <div className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-xl border border-slate-200 bg-white text-xs shadow-lg">
+                  <div className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-xl border border-slate-200 bg-white text-xs shadow-lg dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
                     {RANGE_OPTIONS.map((option) => {
                       const selected = option === range;
                       return (
@@ -254,8 +284,10 @@ export default function AnalyticsPage() {
                             setRange(option);
                             setShowRangeMenu(false);
                           }}
-                          className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50 ${
-                            selected ? "text-slate-900" : "text-slate-600"
+                          className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                            selected
+                              ? "text-slate-900 dark:text-slate-100"
+                              : "text-slate-600 dark:text-slate-300"
                           }`}
                         >
                           <span>{option}</span>
@@ -272,7 +304,7 @@ export default function AnalyticsPage() {
               {/* Export button */}
               <button
                 type="button"
-                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_25px_rgba(15,23,42,0.45)] hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_25px_rgba(15,23,42,0.45)] hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
               >
                 <ArrowDownToLine className="h-4 w-4" />
                 <span>Export Report</span>
@@ -316,15 +348,15 @@ export default function AnalyticsPage() {
           {/* Charts row */}
           <section className="mt-6 grid gap-5 lg:grid-cols-2">
             {/* Revenue Growth card */}
-            <div className="relative rounded-3xl bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">
+            <div className="relative rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Revenue Growth
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Monthly revenue trends
               </p>
 
-              <div className="relative mt-5 h-72 overflow-hidden rounded-2xl border border-[#E5E7FF] bg-gradient-to-b from-[#f5f3ff] to-white px-4 pb-6 pt-4">
+              <div className="relative mt-5 h-72 overflow-hidden rounded-2xl border border-[#E5E7FF] dark:border-slate-700 bg-gradient-to-b from-[#f5f3ff] to-white dark:from-slate-900 dark:to-slate-950 px-4 pb-6 pt-4">
                 <svg
                   viewBox={`0 0 ${svgWidth} ${svgHeight}`}
                   className="h-full w-full text-[#7c3aed]"
@@ -463,13 +495,13 @@ export default function AnalyticsPage() {
                 {/* Tooltip */}
                 {hoveredRevenue && hoveredRevenuePoint && (
                   <div
-                    className="pointer-events-none absolute top-10 w-44 -translate-x-1/2 rounded-2xl bg-white px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)]"
+                    className="pointer-events-none absolute top-10 w-44 -translate-x-1/2 rounded-2xl bg-white dark:bg-slate-900 dark:border dark:border-slate-700 px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)]"
                     style={{ left: `${xPercent}%` }}
                   >
-                    <p className="font-medium text-slate-900">
+                    <p className="font-medium text-slate-900 dark:text-slate-100">
                       {hoveredRevenue.month}
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-500">
+                    <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                       revenue :{" "}
                       <span className="font-semibold">
                         {hoveredRevenue.value}
@@ -481,17 +513,17 @@ export default function AnalyticsPage() {
             </div>
 
             {/* User Activity card */}
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">
+            <div className="rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 User Activity
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Daily active users and new signups
               </p>
 
-              <div className="relative mt-5 h-72 rounded-2xl border border-[#E5E7FF] bg-gradient-to-b from-[#f5f7ff] to-white p-6">
+              <div className="relative mt-5 h-72 rounded-2xl border border-[#E5E7FF] dark:border-slate-700 bg-gradient-to-b from-[#f5f7ff] to-white dark:from-slate-900 dark:to-slate-950 p-6">
                 {/* Y-axis labels */}
-                <div className="absolute left-2 top-6 h-56 flex flex-col justify-between text-[10px] text-slate-400">
+                <div className="absolute left-2 top-6 h-56 flex flex-col justify-between text-[10px] text-slate-400 dark:text-slate-500">
                   <span>180</span>
                   <span>135</span>
                   <span>90</span>
@@ -502,7 +534,7 @@ export default function AnalyticsPage() {
                 {/* grey highlight column on hover */}
                 {hoveredActivityIndex != null && (
                   <div
-                    className="pointer-events-none absolute top-6 bottom-20 w-16 rounded-lg bg-slate-100/70 transition-all"
+                    className="pointer-events-none absolute top-6 bottom-20 w-16 rounded-lg bg-slate-100/70 dark:bg-slate-700/60 transition-all"
                     style={{
                       left: `calc(3rem + ${
                         (hoveredActivityIndex / userActivityData.length) * 100
@@ -544,7 +576,7 @@ export default function AnalyticsPage() {
                       </div>
 
                       {/* Day label */}
-                      <span className="text-[11px] text-slate-500 font-medium mt-3 whitespace-nowrap">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 whitespace-nowrap">
                         {item.day}
                       </span>
                     </div>
@@ -552,7 +584,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Legend */}
-                <div className="flex items-center justify-center gap-8 text-[11px] text-slate-500 mt-4">
+                <div className="flex items-center justify-center gap-8 text-[11px] text-slate-500 dark:text-slate-400 mt-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-5 rounded-sm bg-[#2563eb]" />
                     <span>active</span>
@@ -566,7 +598,7 @@ export default function AnalyticsPage() {
                 {/* Tooltip */}
                 {hoveredActivity && hoveredActivityIndex != null && (
                   <div
-                    className="pointer-events-none absolute top-2 w-48 -translate-x-1/2 rounded-2xl bg-white px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)] z-20"
+                    className="pointer-events-none absolute top-2 w-48 -translate-x-1/2 rounded-2xl bg-white dark:bg-slate-900 dark:border dark:border-slate-700 px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)] z-20"
                     style={{
                       left: `calc(3rem + ${
                         ((hoveredActivityIndex + 0.5) /
@@ -575,17 +607,21 @@ export default function AnalyticsPage() {
                       }%)`,
                     }}
                   >
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">
                       {hoveredActivity.day}
                     </p>
-                    <p className="mt-2 text-[11px] text-slate-600">
-                      <span className="text-slate-500">active:</span>{" "}
+                    <p className="mt-2 text-[11px] text-slate-600 dark:text-slate-300">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        active:
+                      </span>{" "}
                       <span className="font-semibold text-[#2563eb]">
                         {hoveredActivity.active}
                       </span>
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-600">
-                      <span className="text-slate-500">new:</span>{" "}
+                    <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-300">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        new:
+                      </span>{" "}
                       <span className="font-semibold text-[#16a34a]">
                         {hoveredActivity.New}
                       </span>
@@ -599,11 +635,11 @@ export default function AnalyticsPage() {
           {/* Module Performance & Subscription Plans section */}
           <section className="mt-6 grid gap-5 lg:grid-cols-2">
             {/* Module Performance card */}
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">
+            <div className="rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Module Performance
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Usage and revenue by application
               </p>
 
@@ -611,17 +647,17 @@ export default function AnalyticsPage() {
                 {modulePerformanceData.map((module) => (
                   <div key={module.name} className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         {module.name}
                       </p>
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         ${module.revenue.toLocaleString()}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       {/* track */}
-                      <div className="flex-1 h-1.5 rounded-full bg-[#E5E7F3] overflow-hidden">
+                      <div className="flex-1 h-1.5 rounded-full bg-[#E5E7F3] dark:bg-slate-800 overflow-hidden">
                         <div
                           className="h-full rounded-full"
                           style={{
@@ -631,7 +667,7 @@ export default function AnalyticsPage() {
                         />
                       </div>
                       {/* usage pill */}
-                      <span className="inline-flex min-w-[3rem] justify-center rounded-full bg-[#E5EDFF] px-2 py-0.5 text-xs font-semibold text-[#2563eb]">
+                      <span className="inline-flex min-w-[3rem] justify-center rounded-full bg-[#E5EDFF] px-2 py-0.5 text-xs font-semibold text-[#2563eb] dark:bg-slate-800 dark:text-slate-100">
                         {module.usage}%
                       </span>
                     </div>
@@ -641,11 +677,11 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Subscription Plans card */}
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">
+            <div className="rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Subscription Plans
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Distribution by tier
               </p>
 
@@ -673,7 +709,7 @@ export default function AnalyticsPage() {
                           slice.startAngle,
                           slice.endAngle,
                           42,
-                          28 // inner radius smaller → bigger donut
+                          28 // inner radius
                         )}
                         fill={slice.color}
                         onMouseEnter={() => setHoveredSlice(slice)}
@@ -696,10 +732,10 @@ export default function AnalyticsPage() {
                   {/* Hover Tooltip inside the donut */}
                   {hoveredSlice && (
                     <div className="absolute text-center pointer-events-none">
-                      <p className="text-[11px] text-slate-500">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
                         {hoveredSlice.name}
                       </p>
-                      <p className="text-lg font-semibold text-slate-900">
+                      <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {hoveredSlice.percentage}%
                       </p>
                     </div>
@@ -718,11 +754,11 @@ export default function AnalyticsPage() {
                           className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: plan.color }}
                         />
-                        <span className="text-sm font-medium text-slate-700">
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                           {plan.name}
                         </span>
                       </div>
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {plan.percentage}%
                       </span>
                     </div>
@@ -734,15 +770,15 @@ export default function AnalyticsPage() {
 
           {/* Task Productivity line chart (full-width) */}
           <section className="mt-6">
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">
+            <div className="rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Task Productivity
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Weekly completion trends
               </p>
 
-              <div className="relative mt-5 h-72 overflow-hidden rounded-2xl border border-[#E5E7FF] bg-gradient-to-b from-white to-[#f5f7ff] px-4 pb-6 pt-4">
+              <div className="relative mt-5 h-72 overflow-hidden rounded-2xl border border-[#E5E7FF] dark:border-slate-700 bg-gradient-to-b from-white to-[#f5f7ff] dark:from-slate-900 dark:to-slate-950 px-4 pb-6 pt-4">
                 <svg
                   viewBox={`0 0 ${taskSvgWidth} ${taskSvgHeight}`}
                   className="h-full w-full"
@@ -872,20 +908,24 @@ export default function AnalyticsPage() {
                 {/* Tooltip */}
                 {hoveredWeek && hoveredTaskPoint && (
                   <div
-                    className="pointer-events-none absolute top-10 w-48 -translate-x-1/2 rounded-2xl bg-white px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)]"
+                    className="pointer-events-none absolute top-10 w-48 -translate-x-1/2 rounded-2xl bg-white dark:bg-slate-900 dark:border dark:border-slate-700 px-4 py-3 text-xs shadow-[0_12px_30px_rgba(148,163,184,0.55)]"
                     style={{ left: `${taskTooltipXPercent}%` }}
                   >
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">
                       {hoveredWeek.week}
                     </p>
                     <p className="mt-2 text-[11px] text-emerald-600">
-                      <span className="text-slate-500">completed : </span>
+                      <span className="text-slate-500 dark:text-slate-400">
+                        completed :{" "}
+                      </span>
                       <span className="font-semibold">
                         {hoveredWeek.completed}
                       </span>
                     </p>
                     <p className="mt-1 text-[11px] text-amber-500">
-                      <span className="text-slate-500">pending : </span>
+                      <span className="text-slate-500 dark:text-slate-400">
+                        pending :{" "}
+                      </span>
                       <span className="font-semibold">
                         {hoveredWeek.pending}
                       </span>
@@ -894,7 +934,7 @@ export default function AnalyticsPage() {
                 )}
 
                 {/* Legend */}
-                <div className="absolute inset-x-0 bottom-4 flex items-center justify-center gap-10 text-[11px] text-slate-500">
+                <div className="absolute inset-x-0 bottom-4 flex items-center justify-center gap-10 text-[11px] text-slate-500 dark:text-slate-400">
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1">
                       <span className="h-[3px] w-6 rounded-full bg-[#10b981]" />
@@ -939,24 +979,28 @@ function MetricCard({
   negative,
 }: MetricCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-3xl bg-white px-5 py-4 shadow-sm">
+    <div className="flex items-center justify-between rounded-3xl bg-white dark:bg-slate-900 px-5 py-4 shadow-sm dark:shadow-none border border-transparent dark:border-slate-800">
       <div>
-        <p className="text-xs text-slate-500">{label}</p>
-        <p className="mt-2 text-xl font-semibold text-slate-900">{value}</p>
-        <p className="mt-1 text-[11px] text-slate-400">{sublabel}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
+          {value}
+        </p>
+        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+          {sublabel}
+        </p>
       </div>
       <div className="flex flex-col items-end gap-3">
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${
             negative
-              ? "bg-rose-50 text-rose-500"
-              : "bg-emerald-50 text-emerald-600"
+              ? "bg-rose-50 text-rose-500 dark:bg-rose-900/30 dark:text-rose-300"
+              : "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300"
           }`}
         >
           {trend}
         </span>
         <div
-          className={`flex h-9 w-9 items-center justify-center rounded-2xl ${iconBg}`}
+          className={`flex h-9 w-9 items-center justify-center rounded-2xl ${iconBg} dark:bg-slate-800 dark:text-slate-100`}
         >
           {label === "Total Revenue" && <DollarSign className="h-4 w-4" />}
           {label === "Active Users" && <Users className="h-4 w-4" />}
