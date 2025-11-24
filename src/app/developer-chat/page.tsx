@@ -1,6 +1,7 @@
 // src/app/developer-support/page.tsx
 "use client";
 
+import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
 import {
@@ -12,6 +13,8 @@ import {
   Image,
   Send,
   MessageCircleMore,
+  X,
+  ChevronDown,
 } from "lucide-react";
 
 type TicketStatus = "Open" | "In Progress" | "Resolved";
@@ -103,6 +106,8 @@ const messages: ChatMessage[] = [
 ];
 
 export default function DeveloperSupportPage() {
+  const [showNewTicket, setShowNewTicket] = useState(false);
+
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-[#020617] dark:text-slate-100">
       <Sidebar />
@@ -125,6 +130,7 @@ export default function DeveloperSupportPage() {
 
             <button
               type="button"
+              onClick={() => setShowNewTicket(true)}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-4 py-2 text-xs font-semibold text-white shadow-[0_14px_30px_rgba(79,70,229,0.45)] hover:opacity-95"
             >
               <MessageSquare className="h-4 w-4" />
@@ -169,7 +175,7 @@ export default function DeveloperSupportPage() {
             {/* Left: tickets list */}
             <div className="lg:w-[360px] flex-none">
               <div className="rounded-3xl border border-slate-200/70 bg-white/80 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/70 dark:border-slate-800">
+                <div className="flex items-center justify-between border-b border-slate-200/70 px-5 py-4 dark:border-slate-800">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       Your Tickets
@@ -262,6 +268,12 @@ export default function DeveloperSupportPage() {
           </section>
         </main>
       </div>
+
+      {/* New Ticket Modal */}
+      <NewTicketModal
+        open={showNewTicket}
+        onClose={() => setShowNewTicket(false)}
+      />
     </div>
   );
 }
@@ -360,6 +372,137 @@ function ChatBubble({ message }: { message: ChatMessage }) {
           <span className="text-[10px] opacity-70">{message.time}</span>
         </div>
         <p className="leading-relaxed">{message.text}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- New Ticket Modal ---------- */
+
+interface NewTicketModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+function NewTicketModal({ open, onClose }: NewTicketModalProps) {
+  const [title, setTitle] = useState("");
+  const [application, setApplication] = useState("");
+  const [priority, setPriority] = useState("");
+  const [description, setDescription] = useState("");
+
+  if (!open) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // You can wire this up to your API later
+    // console.log({ title, application, priority, description });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+        {/* Header */}
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+              Create Support Ticket
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Describe your issue and our team will get back to you
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Title */}
+          <div>
+            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Title
+            </label>
+            <div className="mt-2 rounded-xl bg-slate-50 ring-1 ring-slate-200 shadow-inner dark:bg-slate-900 dark:ring-slate-700">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Brief description of your issue"
+                className="w-full rounded-xl bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          {/* Application */}
+          <div>
+            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Application
+            </label>
+            <div className="mt-2 relative rounded-xl bg-slate-50 ring-1 ring-slate-200 shadow-inner dark:bg-slate-900 dark:ring-slate-700">
+              <select
+                value={application}
+                onChange={(e) => setApplication(e.target.value)}
+                className="w-full appearance-none rounded-xl bg-transparent px-3 py-2 text-sm text-slate-900 outline-none dark:text-slate-100"
+              >
+                <option value="">Select application</option>
+                <option value="HireX">HireX</option>
+                <option value="QR Generator">QR Generator</option>
+                <option value="Jewellery E-Com">Jewellery E-Com</option>
+                <option value="Job Portal">Job Portal</option>
+                <option value="Website Builder">Website Builder</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Priority
+            </label>
+            <div className="mt-2 relative rounded-xl bg-slate-50 ring-1 ring-slate-200 shadow-inner dark:bg-slate-900 dark:ring-slate-700">
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="w-full appearance-none rounded-xl bg-transparent px-3 py-2 text-sm text-slate-900 outline-none dark:text-slate-100"
+              >
+                <option value="">Select priority</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Description
+            </label>
+            <div className="mt-2 rounded-xl bg-slate-50 ring-1 ring-slate-200 shadow-inner dark:bg-slate-900 dark:ring-slate-700">
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={4}
+                placeholder="Provide detailed information about your issue..."
+                className="w-full resize-none rounded-xl bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="mt-4 w-full rounded-xl bg-gradient-to-r from-[#6366f1] to-[#a855f7] py-2.5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.6)] hover:opacity-95"
+          >
+            Submit Ticket
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Moon, Sun, Search } from "lucide-react";
+import { Bell, Moon, Sun, Search, Bot } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   SignedIn,
@@ -49,12 +49,14 @@ export default function TopBar() {
         <button
           type="button"
           onClick={toggleChat}
-          className="flex items-center rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-5 py-2 text-xs font-semibold text-white shadow-[0_12px_30px_rgba(124,58,237,0.4)] hover:brightness-110"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#A855F7] to-[#7C3AED] px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_rgba(129,62,255,0.55)] hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A855F7]"
         >
-          <span className="mr-2 rounded-full bg-white/10 px-2 py-1 text-[10px]">
-            Osperra AI
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
+            <Bot className="h-3.5 w-3.5" />
           </span>
+          <span className="tracking-tight">Osperra AI</span>
         </button>
+
 
         {/* Theme toggle */}
         <button
