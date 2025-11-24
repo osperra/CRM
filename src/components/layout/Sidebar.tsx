@@ -20,7 +20,7 @@ const navItems = [
   { label: "Analytics", icon: BarChart3, href: "/analytics" },
   { label: "Notifications", icon: Bell, href: "/notifications " },
   { label: "Social Hub", icon: MessageCircle, href: "/social-hub" },
-  { label: "Osperra Store", icon: ShoppingBag, href: "#" },
+  { label: "Osperra Store", icon: ShoppingBag, href: "/osperra-store" },
   // 🔧 FIXED: point Developer Chat to the real route
   { label: "Developer Chat", icon: MessageCircle, href: "/developer-chat" },
   { label: "Settings", icon: Settings, href: "/settings" },
