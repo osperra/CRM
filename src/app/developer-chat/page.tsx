@@ -290,22 +290,37 @@ interface StatCardProps {
 
 function StatCard({ icon: Icon, iconBg, label, value, sublabel }: StatCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-3xl border border-slate-200/70 bg-white/80 px-5 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-      <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="mt-2 text-xl font-semibold">{value}</p>
+    <div className="flex flex-col justify-between rounded-3xl border border-slate-100 bg-white px-5 py-4 shadow-soft transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-[0_18px_45px_rgba(0,0,0,0.65)]">
+      {/* top row: icon on left, empty space on right (like badge area) */}
+      <div className="flex items-start justify-between">
+        <div
+          className={[
+            "flex h-9 w-9 items-center justify-center rounded-xl text-sm",
+            iconBg, // e.g. "bg-indigo-500/10 text-indigo-400"
+          ].join(" ")}
+        >
+          <Icon className="h-4 w-4" />
+        </div>
+        {/* keeping right side empty so spacing matches other stat cards */}
+        <span className="inline-block h-5 w-5" />
+      </div>
+
+      {/* bottom: label, value, sublabel */}
+      <div className="mt-4">
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          {label}
+        </div>
+        <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-50">
+          {value}
+        </div>
         <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
           {sublabel}
         </p>
       </div>
-      <div
-        className={`flex h-9 w-9 items-center justify-center rounded-2xl ${iconBg}`}
-      >
-        <Icon className="h-4 w-4" />
-      </div>
     </div>
   );
 }
+
 
 function TicketRow({ ticket }: { ticket: Ticket }) {
   const statusColors: Record<TicketStatus, string> = {

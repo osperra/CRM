@@ -396,24 +396,42 @@ interface StatProps {
 
 function StoreStatCard({ icon, label, value, sub, iconBg }: StatProps) {
   return (
-    <div className="flex items-center justify-between rounded-3xl border border-slate-100 bg-white px-5 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-50">
+    <div className="flex flex-col justify-between rounded-3xl border border-slate-100 bg-white px-5 py-4 shadow-soft transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-[0_18px_45px_rgba(0,0,0,0.65)]">
+      
+      {/* Top Row */}
+      <div className="flex items-start justify-between">
+        {/* ICON */}
+        <div
+          className={[
+            "flex h-10 w-10 items-center justify-center rounded-xl text-sm",
+            iconBg, // bg + text colors from props
+          ].join(" ")}
+        >
+          {icon}
+        </div>
+
+        {/* Empty space for symmetry */}
+        <span className="inline-block h-4 w-4" />
+      </div>
+
+      {/* Text Section */}
+      <div className="mt-4">
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          {label}
+        </div>
+
+        <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-50">
           {value}
-        </p>
+        </div>
+
         <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
           {sub}
         </p>
       </div>
-      <div
-        className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBg}`}
-      >
-        {icon}
-      </div>
     </div>
   );
 }
+
 
 function AppCard({ app }: { app: AppCardData }) {
   return (

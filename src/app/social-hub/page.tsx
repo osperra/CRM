@@ -283,26 +283,51 @@ function StatCard({
   iconColor,
 }: StatCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-3xl bg-white px-5 py-4 shadow-sm ring-1 ring-slate-200 dark:bg-[#020617] dark:ring-slate-800">
-      <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-50">
+    <div className="
+      flex flex-col justify-between
+      rounded-3xl
+      bg-white px-5 py-4
+      shadow-soft
+      ring-1 ring-slate-200
+
+      dark:bg-[#020617]
+      dark:ring-slate-800
+      dark:shadow-[0_18px_45px_rgba(0,0,0,0.65)]
+      transition-all
+    ">
+      {/* Top Row */}
+      <div className="flex items-start justify-between">
+        <div
+          className={[
+            "flex h-10 w-10 items-center justify-center rounded-xl",
+            iconBg,
+          ].join(" ")}
+        >
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+        </div>
+
+        {/* Empty placeholder for symmetry (no badge but keeps layout consistent) */}
+        <span className="inline-block h-4 w-4" />
+      </div>
+
+      {/* Bottom Text Section */}
+      <div className="mt-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          {label}
+        </p>
+
+        <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-50">
           {value}
         </p>
+
         <p className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400">
           {helper}
         </p>
       </div>
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl shadow-sm">
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBg}`}
-        >
-          <Icon className={`h-5 w-5 ${iconColor}`} />
-        </div>
-      </div>
     </div>
   );
 }
+
 
 interface PlatformCardProps {
   name: string;

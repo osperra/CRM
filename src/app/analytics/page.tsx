@@ -960,7 +960,6 @@ export default function AnalyticsPage() {
 }
 
 /* ---------------- Small metric card component ---------------- */
-
 interface MetricCardProps {
   iconBg: string;
   label: string;
@@ -979,36 +978,58 @@ function MetricCard({
   negative,
 }: MetricCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-3xl bg-white dark:bg-slate-900 px-5 py-4 shadow-sm dark:shadow-none border border-transparent dark:border-slate-800">
-      <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
-          {value}
-        </p>
-        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
-          {sublabel}
-        </p>
-      </div>
-      <div className="flex flex-col items-end gap-3">
+    <div
+      className="
+        flex flex-col justify-between
+        rounded-3xl
+        bg-white px-5 py-4
+        shadow-soft ring-1 ring-slate-200
+        transition-all
+        dark:bg-[#020617]
+        dark:ring-slate-800
+        dark:shadow-[0_18px_45px_rgba(0,0,0,0.65)]
+      "
+    >
+      {/* Top Section */}
+      <div className="flex items-start justify-between">
+        {/* Icon */}
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconBg} dark:bg-slate-800 dark:text-slate-100`}
+        >
+          {label === "Total Revenue" && <DollarSign className="h-5 w-5" />}
+          {label === "Active Users" && <Users className="h-5 w-5" />}
+          {label === "Avg Usage" && <Activity className="h-5 w-5" />}
+          {label === "Task Completion" && <CheckCircle2 className="h-5 w-5" />}
+        </div>
+
+        {/* Trend Badge */}
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${
-            negative
-              ? "bg-rose-50 text-rose-500 dark:bg-rose-900/30 dark:text-rose-300"
-              : "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300"
-          }`}
+          className={`
+            rounded-full px-2 py-0.5 text-[11px] font-semibold
+            ${
+              negative
+                ? "bg-rose-50 text-rose-500 dark:bg-rose-900/30 dark:text-rose-300"
+                : "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300"
+            }
+          `}
         >
           {trend}
         </span>
-        <div
-          className={`flex h-9 w-9 items-center justify-center rounded-2xl ${iconBg} dark:bg-slate-800 dark:text-slate-100`}
-        >
-          {label === "Total Revenue" && <DollarSign className="h-4 w-4" />}
-          {label === "Active Users" && <Users className="h-4 w-4" />}
-          {label === "Avg Usage" && <Activity className="h-4 w-4" />}
-          {label === "Task Completion" && (
-            <CheckCircle2 className="h-4 w-4" />
-          )}
-        </div>
+      </div>
+
+      {/* Bottom Text */}
+      <div className="mt-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          {label}
+        </p>
+
+        <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-50">
+          {value}
+        </p>
+
+        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+          {sublabel}
+        </p>
       </div>
     </div>
   );
